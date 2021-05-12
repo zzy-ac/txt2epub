@@ -9,6 +9,7 @@ epubname = filename + ".epub"
 title_string = filename
 author_string = input("请输入作者名：")
 a = input("编码格式：")
+os.system("mv *.txt '%s'" % (txtname))
 
 
 print("开始文件转码.......")
@@ -80,7 +81,9 @@ f = open(txtname,'w',encoding="utf=8")
 f.write(new_content)
 f.close
     
+    
 os.system("rename .jpg .jpeg *.jpg")
+os.system("mv *.jpeg '%s'" % (jpgname))
 os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
 print("开始转换EPUB文件........")
 os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-cover-image="%s"' % (txtname, epubname, jpgname))
