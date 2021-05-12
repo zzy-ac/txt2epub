@@ -1,4 +1,4 @@
-# txt2epub
+# txt2epub(本地)
 py、pandoc合力打造的txt转epub自动精排自动删除多余空格空行脚本！
 
 使用方法：
