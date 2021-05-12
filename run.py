@@ -1,4 +1,4 @@
-print("注：请将txt和jpeg文件重命名成书名+后缀\n并将其放入脚本所在文件夹\n请查看txt的编码\n\n请务必确保文件夹内有txt和jpeg后缀的同名文件\n\n")
+print("注：请将txt和jpeg/jpeg文件放入脚本所在文件夹\n请查看txt的编码\n\n")
 import os
 import regex as re
 
