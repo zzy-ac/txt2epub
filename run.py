@@ -12,6 +12,26 @@ a = input("编码格式：")
 
 os.system('mv *.txt "%s"' % (txtname))
 
+
+# 开始图片处理
+Your_Dir='./'
+Files=os.listdir(Your_Dir)
+for k in range(len(Files)):
+    # 提取文件夹内所有文件的后缀
+    Files[k]=os.path.splitext(Files[k])[1]
+
+# 你想要找的文件的后缀
+Str='.jpg'
+if Str in Files:
+    os.system("rename .jpg .jpeg *.jpg")
+    print('图片转换已完成')
+else:
+    print('图片转换已完成') 
+
+os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
+os.system('mv *.jpeg "%s"' % (jpgname))
+#图片转换结束
+
 print("开始文件转码.......")
 f = open(txtname, 'r', encoding = a)
 content = f.read()
@@ -71,7 +91,7 @@ for line in lines:
     if line == "内容简介：":
         new_content.append("# " + line + "\n")
         continue
-    if re.match(r'^\s*[第卷][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[章卷回].*',line):
+    if re.match(r'^\s*[第卷][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[章卷].*',line):
         new_content.append("# " + line + "\n")
         continue
     new_content.append(line + "\n")
@@ -80,24 +100,6 @@ new_content = "\n".join(new_content)
 f = open(txtname,'w',encoding="utf=8")
 f.write(new_content)
 f.close
-
-# 图片处理
-Your_Dir='./'
-Files=os.listdir(Your_Dir)
-for k in range(len(Files)):
-    # 提取文件夹内所有文件的后缀
-    Files[k]=os.path.splitext(Files[k])[1]
-
-# 你想要找的文件的后缀
-Str='.jpg'
-if Str in Files:
-    os.system("rename .jpg .jpeg *.jpg")
-    print('图片转换已完成')
-else:
-    print('图片转换已完成') 
-
-os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
-os.system('mv *.jpeg "%s"' % (jpgname))
 
 
 print("开始转换EPUB文件........")
