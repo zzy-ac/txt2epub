@@ -1,16 +1,17 @@
 print("注：请将txt和jpeg文件重命名成书名+后缀\n并将其放入脚本所在文件夹\n请查看txt的编码\n\n请务必确保文件夹内有txt和jpeg后缀的同名文件\n\n")
 import os
 import regex as re
+import glob
+import chardet
 
-filename = input("请输入书名：")
-txtname = filename + ".txt"
-jpgname = filename + ".jpeg"
-epubname = filename + ".epub"
-title_string = filename
+x = glob.glob('*.txt')
+filename = str(x)
+bookname = filename[2:-6]
+txtname = bookname + ".txt"
+jpgname = bookname + ".jpeg"
+epubname = bookname + ".epub"
+title_string = bookname
 author_string = input("请输入作者名：")
-a = input("编码格式：")
-
-os.system('mv *.txt "%s"' % (txtname))
 
 
 # 开始图片处理
@@ -33,13 +34,26 @@ os.system('mv *.jpeg "%s"' % (jpgname))
 #图片转换结束
 
 print("开始文件转码.......")
-f = open(txtname, 'r', encoding = a)
-content = f.read()
-f.close()
-f = open(txtname, 'w', encoding="utf-8")
-f.write(content)
-f.close()
 
+def detectCode(path):
+    with open(path, 'rb') as file:
+        data = file.read(20000)
+        dicts = chardet.detect(data)
+    return dicts["encoding"]
+
+path = txtname
+
+ecode = detectCode(path)
+
+if ecode != 'utf-8':
+        f = open(txtname, 'r', encoding = "gbk")
+        content = f.read()
+        f.close()
+        f = open(txtname, 'w', encoding="utf-8")
+        f.write(content)
+        f.close()
+else:
+        print('OK')
 print("开始格式化文本")
 def replace_comma(data):
     """
@@ -104,8 +118,10 @@ f.close
 
 print("开始转换EPUB文件........")
 os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-cover-image="%s"' % (txtname, epubname, jpgname))
+os.system('kindlegen -c1 -dont_append_source "%s"' % (epubname))
 print("删除残留文件......")
 os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
 os.system("mv *.epub /home/zzy/Desktop")
+os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")
