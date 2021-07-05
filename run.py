@@ -44,8 +44,8 @@ def detectCode(path):
 path = txtname
 
 ecode = detectCode(path)
-
-if ecode != 'utf-8':
+print('文件编码：' + ecode)
+if ecode != 'utf-8' and ecode != 'UTF-8-SIG':
         f = open(txtname, 'r', encoding = "gbk")
         content = f.read()
         f.close()
