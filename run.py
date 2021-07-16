@@ -3,6 +3,7 @@ import os
 import regex as re
 import glob
 import chardet
+import time
 
 x = glob.glob('*.txt')
 filename = str(x)
@@ -13,6 +14,7 @@ epubname = bookname + ".epub"
 title_string = bookname
 author_string = input("请输入作者名：")
 
+start = time.perf_counter()
 
 # 开始图片处理
 Your_Dir='./'
@@ -87,7 +89,7 @@ if __name__ == '__main__':
     deal_file(filename1,filename2) 
 
 os.renames(filename2,filename1)
-os.system("sleep 5s")
+
 print("格式化文件完成")
 
 f = open(txtname,'r', encoding="utf-8")
@@ -118,10 +120,16 @@ f.close
 
 print("开始转换EPUB文件........")
 os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-cover-image="%s"' % (txtname, epubname, jpgname))
-os.system('kindlegen -c1 -dont_append_source "%s"' % (epubname))
+end = time.perf_counter()
+print('Running time: %s Seconds' % (end - start))
+start_1 = time.perf_counter()
+os.system('kindlegen -c1 -dont_append_source "%s" > a' % (epubname))
+end_1 = time.perf_counter()
+print('Running time: %s Seconds' % (end_1 - start_1))
 print("删除残留文件......")
 os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
+os.system('rm a')
 os.system("mv *.epub /home/zzy/Desktop")
 os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")
