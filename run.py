@@ -1,3 +1,4 @@
+#!/usr/bin/python
 print("注：请将txt和jpeg文件重命名成书名+后缀\n并将其放入脚本所在文件夹\n请查看txt的编码\n\n请务必确保文件夹内有txt和jpeg后缀的同名文件\n\n")
 import os
 import regex as re
@@ -48,7 +49,7 @@ path = txtname
 ecode = detectCode(path)
 print('文件编码：' + ecode)
 if ecode != 'utf-8' and ecode != 'UTF-8-SIG':
-        f = open(txtname, 'r', encoding = "gbk")
+        f = open(txtname, 'r', encoding = "gb18030")
         content = f.read()
         f.close()
         f = open(txtname, 'w', encoding="utf-8")
@@ -123,13 +124,13 @@ os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-cover-image="%s"' 
 end = time.perf_counter()
 print('Running time: %s Seconds' % (end - start))
 start_1 = time.perf_counter()
-os.system('kindlegen -c1 -dont_append_source "%s" > a' % (epubname))
+#os.system('kindlegen -c1 -dont_append_source "%s" > a' % (epubname))
 end_1 = time.perf_counter()
-print('Running time: %s Seconds' % (end_1 - start_1))
+#print('Running time: %s Seconds' % (end_1 - start_1))
 print("删除残留文件......")
 os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
 os.system('rm a')
 os.system("mv *.epub /home/zzy/Desktop")
-os.system("mv *.mobi /home/zzy/Desktop")
+#os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")
