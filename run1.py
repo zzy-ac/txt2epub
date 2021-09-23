@@ -26,7 +26,7 @@ epubname = bookname + ".epub"
 #author = bookauthor[bookauthor.rfind(' 作者：'):]
 #author_string = author.replace(' 作者：' , '')
 
-if cover_qidian == 'Y':
+if cover_qidian == 'Y' or cover_qidian == 'y':
 
     url = "https://m.qidian.com/search?kw=" + bookname  # 指定目标url, 注意是完整的url, 而[>
     ob = os.system('wget "%s" -O url.html --show-progress -q' % (url))	# 获取目标url对象
@@ -38,7 +38,7 @@ if cover_qidian == 'Y':
     res = re.findall(r'(//bookcover.yuewen.com/qdbimg/349573/.*150)',needcode) # 在链接所在>
     cover_url = 'https:' + res[0].replace('150','600') #将链接转换为600*800尺寸图片的链接
     os.system('wget "%s" -O "%s".jpg --show-progress -q ;rm url.html' % (cover_url,filename)) # 调用curl下载图片（别问我为什么不用python下，我菜。
-elif cover_qidian == 'N':
+elif cover_qidian == 'N' or cover_qidian == 'n':
     os.system("cp  ~/storage/downloads/ebooks/*.jpg ./ ; mv ~/storage/downloads/ebooks/*.jpg ~/storage/downloads/ebooks/cache ")
     os.system("cp  ~/storage/downloads/ebooks/*.jpeg ./ ; mv ~/storage/downloads/ebooks/*.jpeg ~/storage/downloads/ebooks/cache ; rm ~/storage/downloads/ebooks/cache")
 else:
