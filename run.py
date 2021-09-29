@@ -1,136 +1,188 @@
-#!/usr/bin/python
-print("注：请将txt和jpeg文件重命名成书名+后缀\n并将其放入脚本所在文件夹\n请查看txt的编码\n\n请务必确保文件夹内有txt和jpeg后缀的同名文件\n\n")
-import os
-import regex as re
-import glob
-import chardet
+"""
+-------------------------------------------------
+File Name：run
+
+Change Activity:
+
+2021/9/30: V1.0: 重构代码，添加菠萝包API接口获取书籍和封面数据
+-------------------------------------------------
+"""
+
+import requests
 import time
+import chardet
+import glob
+import re
+from PIL import Image
+from io import BytesIO
+import os
 
-x = glob.glob('*.txt')
-filename = str(x)
-bookname = filename[2:-6]
-txtname = bookname + ".txt"
-jpgname = bookname + ".jpeg"
-epubname = bookname + ".epub"
-title_string = bookname
-author_string = input("请输入作者名：")
 
-start = time.perf_counter()
 
-# 开始图片处理
-Your_Dir='./'
-Files=os.listdir(Your_Dir)
-for k in range(len(Files)):
-    # 提取文件夹内所有文件的后缀
-    Files[k]=os.path.splitext(Files[k])[1]
+class Epub:
+    def __init__(self):
+        self.novelName = ''
+        self.NovelTXTName = ''
+        self.NovelPictureName = ''
+        self.NovelEpubName = ''
 
-# 你想要找的文件的后缀
-Str='.jpg'
-if Str in Files:
-    os.system("rename .jpg .jpeg *.jpg")
-    print('图片转换已完成')
-else:
-    print('图片转换已完成') 
 
-os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
-os.system('mv *.jpeg "%s"' % (jpgname))
-#图片转换结束
-
-print("开始文件转码.......")
-
-def detectCode(path):
-    with open(path, 'rb') as file:
-        data = file.read(20000)
-        dicts = chardet.detect(data)
-    return dicts["encoding"]
-
-path = txtname
-
-ecode = detectCode(path)
-print('文件编码：' + ecode)
-if ecode != 'utf-8' and ecode != 'UTF-8-SIG':
-        f = open(txtname, 'r', encoding = "gb18030")
-        content = f.read()
-        f.close()
-        f = open(txtname, 'w', encoding="utf-8")
-        f.write(content)
-        f.close()
-else:
-        print('OK')
-print("开始格式化文本")
-def replace_comma(data):
-    """
-    Remove the comma,\t from a string
-    """ 
-    return re.sub("\p{Zs}\p{Zs}+","",data)
- 
-def remove_old(filename_old,filename_new):
-    """
-    remove old file only new file exists!
-    """
-    aa = os.path.exists
-    if aa(filename_old) and aa(filename_new):os.remove(filename_old)
-    else:print("Not allowed!")
- 
-def deal_file(filename_old,filename_new):
-    try:
-        with open(filename_old,encoding="utf8") as f1:
-            with open(filename_new,"a",encoding="utf8") as f2:
-                for i in f1:
-                    if i.strip():f2.write(replace_comma(i))
-        remove_old(filename_old,filename_new)
-        print("Successfully!")
-    except BaseException as e:
-        print(e)
- 
- 
-if __name__ == '__main__':
-    filename1 = txtname
-    filename2 = txtname + '1'
-    deal_file(filename1,filename2) 
-
-os.renames(filename2,filename1)
-
-print("格式化文件完成")
-
-f = open(txtname,'r', encoding="utf-8")
-content = f.read()
-f.close()
-
-lines = content.rsplit("\n") 
-new_content = []
-new_content.append("% "+ title_string)
-new_content.append("% "+ author_string)
-for line in lines:
-    if line == "更多精校小说尽在知轩藏书下载：http://www.zxcs.me/" or line == "==========================================================" or line == title_string or line == title_string + " 作者：" + author_string or line == "作者：" + author_string:
-        continue
+    def get_request(self, url):
+        headers = {"Host":"api.sfacg.com","Connection":"keep-alive","Accept":"application\/vnd.sfacg.api+json;version=1","User-Agent":"boluobao\/4.5.52(iOS;14.0)\/appStore","Accept-Language":"zh-Hans-US;q=1","Authorization":"Basic YXBpdXNlcjozcyMxLXl0NmUqQWN2QHFlcg=="}
+        return requests.get(url, headers=headers).json()
+        
+    def GetJPG(self, url):
+        headers = {"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 UBrowser/4.0.3214.0 Safari/537.36"}
+        return requests.get(url, headers=headers)
+        
+    def WriteTXT(self, path, x, info):
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(info)
     
-    if line == "内容简介：":
-        new_content.append("# " + line + "\n")
-        continue
-    if re.match(r'^\s*[第卷][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[章卷].*',line):
-        new_content.append("# " + line + "\n")
-        continue
-    new_content.append(line + "\n")
-new_content = "\n".join(new_content)
+    # def ReadTXT(self, path, mode, info):
+        # with open(path, mode, encoding="utf=8") as f:
+            # f.read()
+    
+    def GetName(self):
+        print('正在录入书籍数据')
+        getcwd_path = glob.glob('*.txt')
+        filename = ''.join(getcwd_path).split('.')[0]
+        print(filename)
+        searchbook = f"https://api.sfacg.com/search/novels/result?q={filename}&expand=novels%2CsysTags&sort=hot&page=0&size=12"
+        novelId = [novels['novelId'] for novels in self.get_request(searchbook)['data']['novels']]
+        self.novelid = ''.join(map(str, novelId))
+    def get_book(self):
+        self.GetName()
+        url = f'https://api.sfacg.com/novels/{self.novelid}?expand=intro%2CbigNovelCover%2Ctags%2CsysTags'
+        data = self.get_request(url)['data']
+        # print(data)
+        """书名，作者名，签约，收藏，字数"""
+        self.novelName, self.authorName, self.signStatus, self.markCount, self.novelCover, self.charCount = (
+            data['novelName'], data['authorName'], data['signStatus'], data['markCount'], 
+                data['novelCover'], data['charCount'])
+                
+        """最后更新日期， 书籍状态[完结或未完]"""
+        self.lastUpdateTime, self.allowDown = re.sub(r'T', " ", data['lastUpdateTime']), '未完' if data['allowDown'] else '未完'
+        """简介信息，s级大图，标签，web链接，APP链接"""
+        self.bigNovelCover, self.sysTag, web_url, APP_url = (
+            data['expand']['bigNovelCover'], ','.join([tag['tagName'] for tag in data['expand']['sysTags']]),
+                f"https://book.sfacg.com/Novel/{self.novelid}/", f"https://m.sfacg.com/b/{self.novelid}/")
+                    
+        Details = "小说书名:{}\n小说作者:{}\n签约状态:{}\n收藏数量:{}\n小说字数:{}\n书籍序号:{}\n".format(
+        self.novelName, self.authorName, self.signStatus, self.markCount, self.charCount, self.charCount, self.novelid)
+        Details += "小说标签:{}\n最后更新:{}\n小说状态:{}\n网页链接:{}\n手机链接:{}\n".format(
+            self.sysTag, self.lastUpdateTime, self.allowDown, web_url, APP_url)
+        Details += "小说简介:"
+        intro = [re.sub(r'^\s*', "\n　　", line) for line in data['expand']['intro'].split("\n") if re.search(r'\S', line) != None]
+        Details += ''.join(intro)
+        self.Details = Details
+        
+        
+    
+    def epubs(self):
+        self.get_book()
+        save_jpg_path = os.path.join('jpg', self.novelName)
+        """使用requests库下载图片"""
+        if not os.path.exists(save_jpg_path):
+            os.makedirs(save_jpg_path)
+            print(f'已在{save_jpg_path}创建文件夹')
+        with open(os.path.join(save_jpg_path, f'{self.novelName}.jpg'), 'wb') as save:
+            save.write(self.GetJPG(self.novelCover).content)
 
-f = open(txtname,'w',encoding="utf=8")
-f.write(new_content)
-f.close
+        # 开始图片处理
+        FileName_list = os.listdir(save_jpg_path)
+        # 转换格式
+        for extensions in FileName_list:
+            if '.jpg' in extensions:
+                extensions_jpeg = re.sub(r'.jpg', ".jpeg", extensions)
+                os.rename(os.path.join(save_jpg_path, extensions), os.path.join(save_jpg_path, extensions_jpeg))
 
+                print(f"已将 {extensions} 转为 {extensions_jpeg} ")
+            else:
+                print("文件夹里没有JPG图片")
+        self.NovelTXTName, self.NovelPictureName, self.NovelEpubName = (
+            f'{self.novelName}.txt', os.path.join(save_jpg_path, f'{self.novelName}.jpeg'), f'{self.novelName}.epub')
+        
+    
+    def detectCode(path):
+        with open(path, 'rb') as file:
+            data = file.read(20000)
+            dicts = chardet.detect(data)
+        return dicts["encoding"]
+    
+    
+    def codes(self):
+        code_info = self.detectCode(self.NovelTXTName)
+        print('文件编码:', code_info)
+        if code_info != 'utf-8' and code_info != 'UTF-8-SIG':
+            print("开始格式化文本")
+            with open(self.NovelTXTName, 'r', encoding="gb18030") as f:
+                content = f.read()
+            self.WriteTXT(self.NovelTXTName, 'w', content)
+        else:
+            print('文件转码完成')
+    
+    
+    
+    def re_novel(self):
+        read_txt = open(self.NovelTXTName, encoding="utf8") 
+        content = [re.sub(r'^\s*', "　　", line) for line in read_txt.readlines() if re.search(r'\S', line) != None]
+        self.WriteTXT(self.NovelTXTName, 'w', ''.join(content))
 
-print("开始转换EPUB文件........")
-os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-cover-image="%s"' % (txtname, epubname, jpgname))
-end = time.perf_counter()
-print('Running time: %s Seconds' % (end - start))
-start_1 = time.perf_counter()
-#os.system('kindlegen -c1 -dont_append_source "%s" > a' % (epubname))
-end_1 = time.perf_counter()
-#print('Running time: %s Seconds' % (end_1 - start_1))
-print("删除残留文件......")
-os.system('rm "%s"' % (txtname))
-os.system('rm "%s"' % (jpgname))
-os.system('rm a')
-os.system("mv *.epub /home/zzy/Desktop")
-#os.system("mv *.mobi /home/zzy/Desktop")
-print("完成，收工，撒花！！🎉🎉")
+    
+    def new_epub(self):
+        new_content = []
+        new_content.append("% "+ self.novelName)
+        new_content.append("% "+ self.authorName)
+        self.re_novel()
+        print("格式化文本完成,开始分章以及处理多余内容")
+        with open(self.NovelTXTName, 'r', encoding="utf-8") as f:
+            content = f.read()
+        new_content.append(self.Details)
+    
+        for line in content.rsplit("\n"):
+            str1 = "更多精校小说尽在知轩藏书下载：http://www.zxcs.me/"
+            str2 = "==========================================================" 
+        
+            if line == str1 or line == str2 :
+                continue
+            if line == self.novelName or line == f"作者：{self.authorName}":
+                continue
+            if line == "作者：" + self.authorName or line == "作者: " + self.authorName:
+                continue
+            if line == "简介:" or line == "内容简介：":
+                new_content.append("### " + line + "\n")
+                continue
+            if re.match(r'^\s*[(楔子)(引子)(序章)].*', line):
+                new_content.append("## " + line + "\n")
+                continue
+            if re.match(r'^\s*[第][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[卷].*', line):
+                new_content.append("# " + line + "\n")
+                continue
+        
+            if re.match(r'^\s*[第][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[章].*', line):
+                new_content.append("## " + line + "\n")
+                continue
+        
+            new_content.append(line + "\n")
+        new_content = "\n".join(new_content)
+        
+        
+        self.WriteTXT(self.NovelTXTName, 'w', "".join(new_content))
+    
+        print("开始转换EPUB文件........")
+        os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-chapter-level=2 --epub-cover-image="%s"' %
+                  (self.NovelTXTName, self.NovelEpubName, self.NovelPictureName))
+        # end = time.perf_counter()
+        # print('Running time: %s Seconds' % (end - start))
+        # start_1 = time.perf_counter()
+        # end_1 = time.perf_counter()
+        # print("删除残留文件......")
+        # os.system('rm "%s"' % (txtname))
+        # os.system('rm "%s"' % (jpgname))
+        # os.system("mv *.epub ~/storage/downloads/ebooks")
+        print("完成，收工，撒花！！🎉🎉")
+    
+Epub = Epub()
+Epub.epubs()
+Epub.new_epub()
