@@ -70,7 +70,7 @@ else:
 
 os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
 os.system('mv *.jpeg "%s"' % (jpgname))
-#图片转换结束
+#图片转换结束 
 
 print("开始文件转码.......")
 
