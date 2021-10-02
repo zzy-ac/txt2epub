@@ -5,6 +5,7 @@ File Name：run
 Change Activity:
 
 2021/9/30: V1.0: 重构代码，添加菠萝包API接口获取书籍和封面数据
+2021/10/2: V1.1: 优化代码，删去无用判断
 -------------------------------------------------
 """
 
@@ -39,9 +40,6 @@ class Epub:
         with open(path, 'w', encoding='utf-8') as f:
             f.write(info)
     
-    # def ReadTXT(self, path, mode, info):
-        # with open(path, mode, encoding="utf=8") as f:
-            # f.read()
     
     def GetName(self):
         print('正在录入书籍数据')
@@ -128,7 +126,6 @@ class Epub:
         read_txt = open(self.NovelTXTName, encoding="utf8") 
         content = [re.sub(r'^\s*', "　　", line) for line in read_txt.readlines() if re.search(r'\S', line) != None]
         self.WriteTXT(self.NovelTXTName, 'w', ''.join(content))
-
     
     def new_epub(self):
         new_content = []
@@ -141,14 +138,15 @@ class Epub:
         new_content.append(self.Details)
     
         for line in content.rsplit("\n"):
-            str1 = "更多精校小说尽在知轩藏书下载：http://www.zxcs.me/"
-            str2 = "==========================================================" 
-        
-            if line == str1 or line == str2 :
-                continue
             if line == self.novelName or line == f"作者：{self.authorName}":
                 continue
-            if line == "作者：" + self.authorName or line == "作者: " + self.authorName:
+            if line == "作者：" + self.authorName:
+                continue
+            if line == "名称：" + self.novelName:
+                continue
+            if line == "序号：" + self.novelid:
+                continue
+            if line == "标签：" + self.sysTag:
                 continue
             if line == "简介:" or line == "内容简介：":
                 new_content.append("### " + line + "\n")
@@ -159,30 +157,22 @@ class Epub:
             if re.match(r'^\s*[第][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[卷].*', line):
                 new_content.append("# " + line + "\n")
                 continue
-        
             if re.match(r'^\s*[第][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[章].*', line):
                 new_content.append("## " + line + "\n")
                 continue
-        
+
             new_content.append(line + "\n")
         new_content = "\n".join(new_content)
         
         
         self.WriteTXT(self.NovelTXTName, 'w', "".join(new_content))
-    
         print("开始转换EPUB文件........")
         os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-chapter-level=2 --epub-cover-image="%s"' %
                   (self.NovelTXTName, self.NovelEpubName, self.NovelPictureName))
-        # end = time.perf_counter()
-        # print('Running time: %s Seconds' % (end - start))
-        # start_1 = time.perf_counter()
-        # end_1 = time.perf_counter()
-        # print("删除残留文件......")
-        # os.system('rm "%s"' % (txtname))
-        # os.system('rm "%s"' % (jpgname))
-        # os.system("mv *.epub ~/storage/downloads/ebooks")
         print("完成，收工，撒花！！🎉🎉")
+
+if __name__ == '__main__':
+    Epub = Epub()
+    Epub.epubs()
+    Epub.new_epub()
     
-Epub = Epub()
-Epub.epubs()
-Epub.new_epub()
