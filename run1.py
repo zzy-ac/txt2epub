@@ -10,7 +10,6 @@ import requests
 
 cover_qidian = input('是否使用起点封面？\n（选择否将自动使用文件夹下的jpg图片为封面）[Y/N]')
 
-os.system("mv  ~/storage/downloads/ebooks/*.txt ./")
 
 print('正在录入书籍数据')
 path = glob.glob('*.txt')
@@ -26,7 +25,7 @@ epubname = bookname + ".epub"
 #author = bookauthor[bookauthor.rfind(' 作者：'):]
 #author_string = author.replace(' 作者：' , '')
 
-if cover_qidian == 'Y' or cover_qidian == 'y':
+if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
 
     url = "https://m.qidian.com/search?kw=" + bookname  # 指定目标url, 注意是完整的url, 而[>
     ob = os.system('wget "%s" -O url.html --show-progress -q' % (url))	# 获取目标url对象
@@ -39,8 +38,7 @@ if cover_qidian == 'Y' or cover_qidian == 'y':
     cover_url = 'https:' + res[0].replace('150','600') #将链接转换为600*800尺寸图片的链接
     os.system('wget "%s" -O "%s".jpg --show-progress -q ;rm url.html' % (cover_url,filename)) # 调用curl下载图片（别问我为什么不用python下，我菜。
 elif cover_qidian == 'N' or cover_qidian == 'n':
-    os.system("cp  ~/storage/downloads/ebooks/*.jpg ./ ; mv ~/storage/downloads/ebooks/*.jpg ~/storage/downloads/ebooks/cache ")
-    os.system("cp  ~/storage/downloads/ebooks/*.jpeg ./ ; mv ~/storage/downloads/ebooks/*.jpeg ~/storage/downloads/ebooks/cache ; rm ~/storage/downloads/ebooks/cache")
+	print('使用文件夹内的图片作为封面')
 else:
     print('Erro')
     quit()
@@ -70,7 +68,7 @@ else:
 
 os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
 os.system('mv *.jpeg "%s"' % (jpgname))
-#图片转换结束 
+#图片转换结束
 
 print("开始文件转码.......")
 
@@ -145,7 +143,7 @@ for line in lines:
     if line == "简介:" or line == "内容简介：":
             new_content.append("### " + line + "\n")
             continue
-    if re.match(r'^\s*[(楔子)(引子)(序章)].*',line):
+    if re.match(r'^\s*(楔子|序章|序言|序|引子).*',line):
             new_content.append("## " + line + "\n")
             continue
     if re.match(r'^\s*[第][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[卷].*',line):
@@ -176,6 +174,6 @@ print("删除残留文件......")
 os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
 #os.system('rm a')
-os.system("mv *.epub ~/storage/downloads/ebooks")
+#os.system("mv *.epub ~/storage/downloads/ebooks")
 #os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")

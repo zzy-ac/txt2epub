@@ -18,9 +18,17 @@ h1 {
     border-style: none none dotted none;
     border-width: 0px 0px 1px 0px;
 }
-h2 { text-align: left; }
-h3 {
+h2 {
+    margin: 1em 0 5em;
+    line-height: 120%;
     text-align: left;
+    font-family: STSong, serif,"Times New Roman", "方正书宋", "宋体", "明体", "zw";
+    padding: 15px 12px 1em 5px;
+    border-style: none none dotted none;
+    border-width: 0px 0px 1px 0px;
+}
+h3 {
+    text-align: center;
 }
 h4 { text-align: left; }
 h5 { text-align: left; }
@@ -31,7 +39,7 @@ h1.title {
     text-align: center;
     font-family: "Times New Roman","方正书宋","宋体","明体","zw",sans-serif;
 }
-h2.author { 
+p.author { 
     text-align: center;
 }
 h3.date { }
