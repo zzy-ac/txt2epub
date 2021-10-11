@@ -6,6 +6,7 @@ Change Activity:
 
 2021/9/30: V1.0: 重构代码，添加菠萝包API接口获取书籍和封面数据
 2021/10/2: V1.1: 优化代码，删去无用判断
+2021/10/2: V1.1: 添加文本批量转换
 -------------------------------------------------
 """
 
@@ -40,17 +41,8 @@ class Epub:
         with open(path, 'w', encoding='utf-8') as f:
             f.write(info)
     
-    
-    def GetName(self):
-        print('正在录入书籍数据')
-        getcwd_path = glob.glob('*.txt')
-        filename = ''.join(getcwd_path).split('.')[0]
-        print(filename)
-        searchbook = f"https://api.sfacg.com/search/novels/result?q={filename}&expand=novels%2CsysTags&sort=hot&page=0&size=12"
-        novelId = [novels['novelId'] for novels in self.get_request(searchbook)['data']['novels']]
-        self.novelid = ''.join(map(str, novelId))
+            
     def get_book(self):
-        self.GetName()
         url = f'https://api.sfacg.com/novels/{self.novelid}?expand=intro%2CbigNovelCover%2Ctags%2CsysTags'
         data = self.get_request(url)['data']
         # print(data)
@@ -78,7 +70,6 @@ class Epub:
         
     
     def epubs(self):
-        self.get_book()
         save_jpg_path = os.path.join('jpg', self.novelName)
         """使用requests库下载图片"""
         if not os.path.exists(save_jpg_path):
@@ -171,8 +162,19 @@ class Epub:
                   (self.NovelTXTName, self.NovelEpubName, self.NovelPictureName))
         print("完成，收工，撒花！！🎉🎉")
 
+    def GetName(self):
+        print('正在录入书籍数据')
+        getcwd_path = glob.glob('*.txt')
+        for name in getcwd_path:
+            filename = ''.join(name).split('.')[0]
+            searchbook = f"https://api.sfacg.com/search/novels/result?q={filename}&expand=novels%2CsysTags&sort=hot&page=0&size=12"
+            novelId = [novels['novelId'] for novels in self.get_request(searchbook)['data']['novels']]
+            self.novelid = ''.join(map(str, novelId))
+            self.get_book()
+            self.epubs()
+            self.new_epub()
+            
 if __name__ == '__main__':
     Epub = Epub()
-    Epub.epubs()
-    Epub.new_epub()
+    Epub.GetName()
     
