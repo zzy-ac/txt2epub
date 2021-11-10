@@ -117,7 +117,23 @@ class Epub:
         read_txt = open(self.NovelTXTName, encoding="utf8") 
         content = [re.sub(r'^\s*', "　　", line) for line in read_txt.readlines() if re.search(r'\S', line) != None]
         self.WriteTXT(self.NovelTXTName, 'w', ''.join(content))
-    
+
+    def download_insert_pict(self, content):
+        pattern_insert_img = re.compile('\[img.*?\](.*?)\[/img\]')
+        imgs = re.findall(pattern_insert_img,text)
+        code_p = ''
+        if imgs != []:
+            i = 0
+            for img in imgs:
+                try:
+                    image = GetJPG(img).content
+                    
+                    with open(os.path.join('jpg', self.novelName, self.novelName + '.png'),'wb') as fb:
+                        fb.write(image)
+                except:
+                    continue
+                i += 1
+        
     def new_epub(self):
         new_content = []
         new_content.append("% "+ self.novelName)
@@ -127,7 +143,7 @@ class Epub:
         with open(self.NovelTXTName, 'r', encoding="utf-8") as f:
             content = f.read()
         new_content.append(self.Details)
-    
+        download_insert_pict(content)
         for line in content.rsplit("\n"):
             if line == self.novelName or line == f"作者：{self.authorName}":
                 continue
