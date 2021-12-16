@@ -1,6 +1,14 @@
 # txt2epub
 py、pandoc合力打造的txt转epub自动精排自动删除多余空格空行脚本！
+
+### 2021 12.16 更新内容：
+
+1、支持kepub格式转换(可选)（依赖于kepubify）
+
+2、将run1.py合并到run.py,移除run2.py,需要用到菠萝包自动获取封面的功能请自行前往[https://github.com/Elaina-Alex/txt2epub](https://github.com/Elaina-Alex/txt2epub)分支进行使用
+
 ### 2021 9.22  更新内容：
+
 1、支持自动从起点下载封面（可选）
 ### 2021 9.20  更新内容：
 1、新增<code>run1.py</code>以支持二级目录其中第一级为卷第二集为章，有需要可自行修改
