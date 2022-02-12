@@ -1,5 +1,5 @@
 #!/usr/bin/python
-print("注：请将txt和jpeg文件重命名成书名+后缀\n并将其放入脚本所在文件夹\n请查看txt的编码\n\n请务必确保文件夹内有txt和jpeg后缀的同名文件\n\n")
+#print("注：请将txt和jpeg文件重命名成书名+后缀\n并将其放入脚本所在文件夹\n请查看txt的编码\n\n请务必确保文件夹内有txt和jpeg后缀的同名文件\n\n")
 import os
 #import re
 import regex as re
@@ -7,11 +7,12 @@ import glob
 import chardet
 import time
 import requests
-
-cover_qidian = input('是否使用起点封面？\n（选择否将自动使用文件夹下的jpg图片为封面）[Y/N]')
-
+import sys
+cover_qidian = input('是否使用起点封面？[Y/N]')
  
 print('正在录入书籍数据')
+os.system('cp "%s" ./' % sys.argv[1])
+
 path = glob.glob('*.txt')
 filename = str(path)[2:-6]
 #bookname = bookauthor[0:bookauthor.rfind(' 作者：')]
@@ -27,7 +28,8 @@ kepubname = bookname + ".kepub.epub"
 #author_string = author.replace(' 作者：' , '')
 
 if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
-
+    
+    print('开始下载封面')
     url = "https://m.qidian.com/search?kw=" + bookname  # 指定目标url, 注意是完整的url, 而[>
     ob = os.system('wget "%s" -O url.html --show-progress -q' % (url))	# 获取目标url对象
     res = os.popen("cat url.html | grep -e //bookcover.yuewen.com |head -n1|awk -F 'data-src=\"' '{print $2}' | awk -F '\" class=\"book-cover' '{print $1}'")
@@ -41,7 +43,8 @@ if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
     cover_url = 'https:' + res.replace('150','600') #将链接转换为600*800尺寸图片的链接
     os.system('wget "%s" -O "%s".jpg --show-progress -q ;rm url.html' % (cover_url,filename)) # 调用curl下载图片（别问我为什么不用python下，我菜。
 elif cover_qidian == 'N' or cover_qidian == 'n':
-	print('使用文件夹内的图片作为封面')
+	jpgfile=input('请输入封面图片路径：').replace("\n","").replace("'","").replace(" ","")
+	os.system('cp "%s" ./' % jpgfile)
 else:
     print('Erro')
     quit()
@@ -55,6 +58,7 @@ start = time.perf_counter()
 
 
 # 开始图片处理
+
 Your_Dir='./'
 Files=os.listdir(Your_Dir)
 for k in range(len(Files)):
@@ -65,12 +69,12 @@ for k in range(len(Files)):
 Str='.jpg'
 if Str in Files:
     os.system("rename .jpg .jpeg *.jpg")
-    print('图片转换已完成')
+
 else:
-    print('图片转换已完成') 
+    quit()
 
 os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
-os.system('mv *.jpeg "%s"' % (jpgname))
+os.system('rename *.jpeg "%s" *.jpeg' % jpgname)
 #图片转换结束
 
 print("开始文件转码.......")
@@ -84,7 +88,7 @@ def detectCode(path):
 path = txtname
 
 ecode = detectCode(path)
-print('文件编码：' + ecode)
+#print('文件编码：' + ecode)
 if ecode != 'utf-8' and ecode != 'UTF-8-SIG':
         f = open(txtname, 'r', encoding = "gb18030")
         content = f.read()
@@ -127,7 +131,7 @@ if __name__ == '__main__':
 
 os.renames(filename2,filename1)
 
-print("格式化文本完成")
+#print("格式化文本完成")
 
 print('开始分章以及处理多余内容')
 f = open(txtname,'r', encoding="utf-8")
@@ -165,7 +169,7 @@ f.write(new_content)
 f.close
 
 
-print("开始转换EPUB文件........")
+print("开始生成EPUB文件........")
 os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-chapter-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
 end = time.perf_counter()
 print('Running time: %s Seconds' % (end - start))
