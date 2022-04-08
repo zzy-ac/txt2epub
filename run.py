@@ -8,6 +8,7 @@ import chardet
 import time
 import requests
 import sys
+from PIL import Image
 cover_qidian = input('是否使用起点封面？[Y/N]')
  
 print('正在录入书籍数据')
@@ -59,19 +60,47 @@ start = time.perf_counter()
 
 # 开始图片处理
 
-Your_Dir='./'
-Files=os.listdir(Your_Dir)
-for k in range(len(Files)):
-    # 提取文件夹内所有文件的后缀
-    Files[k]=os.path.splitext(Files[k])[1]
+def IsValidImage(img_path):
+    """
+    判断文件是否为有效（完整）的图片
+    :param img_path:图片路径
+    :return:True：有效 False：无效
+    """
+    bValid = True
+    try:
+        Image.open(img_path).verify()
+    except:
+        bValid = False
+    return bValid
 
-# 你想要找的文件的后缀
-Str='.jpg'
-if Str in Files:
-    os.system("rename .jpg .jpeg *.jpg")
+def transimg(path):
+    """
+    转换图片格式
+    :param img_path:图片路径
+    :return: True：成功 False：失败
+    """
+    for image in os.listdir(path):
+        img_path = path + '/' + image
+        if IsValidImage(img_path):
+            try:
+                str = img_path.rsplit(".")
+                if str[-1] == 'jpg' or str[-1] == 'jpeg' or str[-1] == 'JPG' or str[-1] == 'JPEG':
+                    pass
+                else:
+                    str = img_path.rsplit(".", 1)
+                    output_img_path = str[0] + ".jpeg"
+                    im = Image.open(img_path)
+                    rgb_im = im.convert('RGB')
+                    rgb_im.save(output_img_path)
+                    os.remove(img_path)
+            except:
+                pass
+        else:
+            pass
 
-else:
-    quit()
+if __name__ == '__main__':
+    path = './'
+    transimg(path)
 
 os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
 os.system('rename *.jpeg "%s" *.jpeg' % jpgname)
@@ -88,16 +117,26 @@ def detectCode(path):
 path = txtname
 
 ecode = detectCode(path)
+
 #print('文件编码：' + ecode)
+#如果ecode中包含“gb”则说明是gbk编码，将ecode改为gbk
+
 if ecode != 'utf-8' and ecode != 'UTF-8-SIG':
-        f = open(txtname, 'r', encoding = "gb18030")
-        content = f.read()
-        f.close()
-        f = open(txtname, 'w', encoding="utf-8")
-        f.write(content)
-        f.close()
+    if 'GB' or 'gb' in ecode:
+        ecode = 'gbk'
+    else:
+        pass 
+    print("文件编码不是utf-8,开始转换.....")
+    f = open(txtname, 'r', encoding = ecode, errors="ignore")
+    content = f.read()
+    f.close()
+    f = open(txtname, 'w', encoding="utf-8", errors="ignore")
+    f.write(content)
+    f.close()
+    print("转换完成")
 else:
-        print('文件转码完成')
+    print('文件编码是utf-8，无需转换')
+        
 print("开始格式化文本")
 def replace_comma(data):
     """
@@ -154,6 +193,8 @@ for line in lines:
             new_content.append("## " + line + "\n")
             continue
     if re.match(r'^\s*[第][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[卷].*',line):
+        new_content.append("# " + line + "\n")
+    if re.match(r'^\s*[卷][0123456789ⅠI一二三四五六七八九十零序〇百千两]*[ ].*',line):
         new_content.append("# " + line + "\n")
         continue
 
