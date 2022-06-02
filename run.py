@@ -12,7 +12,7 @@ from PIL import Image
 cover_qidian = input('是否使用起点封面？[Y/N]')
  
 print('正在录入书籍数据')
-os.system('cp "%s" ./' % sys.argv[1])
+os.system('mv "~/storage/downloads/ebooks/*.txt" ./')
 
 path = glob.glob('*.txt')
 filename = str(path)[2:-6]
@@ -224,7 +224,7 @@ os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
 #os.system('rm a')
 #os.system('mv *.kepub.epub "%s"' % (kepubname))
-os.system('mv "%s" ~/Desktop' % (epubname))
-os.system('mv "%s" ~/Desktop' % (kepubname))
+os.system('mv "%s" ~/storage/downloads/ebooks' % (epubname))
+os.system('mv "%s" ~/storage/downloads/ebooks' % (kepubname))
 #os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")
