@@ -1,6 +1,50 @@
 # txt2epub
 py、pandoc合力打造的txt转epub自动精排自动删除多余空格空行脚本！
 
+# linux设备教程
+
+```bash
+#安装
+git clone https://github.com/zzy-ac/txt2epub.git
+cd txt2epub
+wget https://raw.githubusercontent.com/zzy-ac/txt2epub/termux/requirements.txt
+pip3 install -r requirements.txt
+#运行
+python3 run.py </path/of/novel>
+```
+
+# Android设备教程
+
+## 安装txt2epub
+
+1、安装termux
+
+2、切换清华镜像源：
+
+```bash
+sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-main stable main@' $PREFIX/etc/apt/sources.list
+apt update&&apt upgrade
+```
+
+3、运行如下指令：
+
+```bash
+curl https://gh.dmnb.cf/https://github.com/zzy-ac/txt2epub/releases/download/files/install.sh | bash
+```
+
+## 使用txt2epub
+
+1. 将txt小说重命名为`《书名》()作者：作者名.txt`的形式，并放入手机Download目录下的ebooks文件夹(如果没有这个文件夹请自建一个)
+
+2. 在termux中运行`txt2epub`指令进行转格式，转格式生成的epub和kepub文件会放到手机的Download/ebooks目录中
+
+# windows设备提示
+
+本人没有windows设备，各位自行琢磨，原理跟linux差不多。
+
+自己把pandoc和kepubify的exe版本下载到txt2epub文件夹然后把run.py中相关的路径修改一下应该就好了。
+
+
 ### 2022 04.08 更新内容：
 
 1、支持包括jpg、png、webp等在内的大部分主流图片作为封面
@@ -34,16 +78,7 @@ python3 run.py /path/to/AAA.txt
 2、自动识别编码格式，不在需要手动设置<br/>
 3、支持生成mobi格式（调用kindlegen）<br/>
 
-使用方法：<br/>
-首先安装pandoc,debian系：<code>apt install pandoc</code> | arch系：<code>pacman -S pandoc</code> | 其他：自行查阅<br/>
-下载本脚本将run.py和epub.css放在同一文件夹下<br/>
-然后将txt小说文件和小说封面一起放入run.py所在文件夹内<br/>
-用终端打开该文件夹，输入指令<br/>
 
-```bash
-python run.py
-```
-运行脚本
 
 ### ~~本脚本目前仅支持jpg/jpeg格式的图片作为封面~~
 
