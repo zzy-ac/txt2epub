@@ -12,7 +12,7 @@ from PIL import Image
 cover_qidian = input('是否使用起点封面？[Y/N]')
  
 print('正在录入书籍数据')
-os.system('mv "~/storage/downloads/ebooks/*.txt" ./')
+os.system('mv ~/storage/downloads/ebooks/*.txt ./')
 
 path = glob.glob('*.txt')
 filename = str(path)[2:-6]
@@ -42,7 +42,7 @@ if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
 #    needcode = lines[232] # 提取出图片链接所在的行
 #    res = re.findall(r'(//bookcover.yuewen.com/qdbimg/349573/.*150)',needcode) # 在链接所在>
     cover_url = 'https:' + res.replace('150','600') #将链接转换为600*800尺寸图片的链接
-    os.system('wget "%s" -O "%s".jpg --show-progress -q ;rm url.html' % (cover_url,filename)) # 调用curl下载图片（别问我为什么不用python下，我菜。
+    os.system('wget "%s" -O "%s" --show-progress -q ;rm url.html' % (cover_url,jpgname)) # 调用curl下载图片（别问我为什么不用python下，我菜。
 elif cover_qidian == 'N' or cover_qidian == 'n':
 	jpgfile=input('请输入封面图片路径：').replace("\n","").replace("'","").replace(" ","")
 	os.system('cp "%s" ./' % jpgfile)
@@ -216,7 +216,7 @@ end = time.perf_counter()
 print('Running time: %s Seconds' % (end - start))
 start_1 = time.perf_counter()
 #os.system('kindlegen -c1 -dont_append_source "%s" > a' % (epubname))
-os.system('kepubify -i "%s"' % (epubname))
+os.system('./kepubify -i "%s"' % (epubname))
 end_1 = time.perf_counter()
 #print('Running time: %s Seconds' % (end_1 - start_1))
 print("删除残留文件......")
