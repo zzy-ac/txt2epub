@@ -24,6 +24,7 @@ txtname = bookname + ".txt"
 jpgname = bookname + ".jpeg"
 epubname = bookname + ".epub"
 kepubname = bookname + ".kepub.epub"
+azw3name = bookname + '.azw3'
 #title_string = bookname
 #author = bookauthor[bookauthor.rfind(' 作者：'):]
 #author_string = author.replace(' 作者：' , '')
@@ -84,7 +85,7 @@ def transimg(path):
         if IsValidImage(img_path):
             try:
                 str = img_path.rsplit(".")
-                if str[-1] == 'jpg' or str[-1] == 'jpeg' or str[-1] == 'JPG' or str[-1] == 'JPEG':
+                if str[-1] == 'jpeg' or str[-1] == 'JPEG':
                     pass
                 else:
                     str = img_path.rsplit(".", 1)
@@ -215,16 +216,22 @@ os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-chapter-level=2 --
 end = time.perf_counter()
 print('Running time: %s Seconds' % (end - start))
 start_1 = time.perf_counter()
-#os.system('kindlegen -c1 -dont_append_source "%s" > a' % (epubname))
+
+os.system('kindlegen -c1 -dont_append_source "%s" -o "%s"> a' % (epubname, azw3name))
+os.system('python ./KindleUnpack/lib/kindleunpack.py -s "%s" "%s"> a' % (azw3name, bookname))
+
 os.system('kepubify -i "%s"' % (epubname))
 end_1 = time.perf_counter()
 #print('Running time: %s Seconds' % (end_1 - start_1))
 print("删除残留文件......")
 os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
-#os.system('rm a')
+os.system('rm "%s"' % (azw3name))
+os.system('rm a')
 #os.system('mv *.kepub.epub "%s"' % (kepubname))
 os.system('mv "%s" ~/Desktop' % (epubname))
 os.system('mv "%s" ~/Desktop' % (kepubname))
+os.system('mv "%s" ~/Desktop/"%s"' % (bookname+'/mobi8-'+azw3name, azw3name))
+os.system('rm -rf "%s"' % (bookname))
 #os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")

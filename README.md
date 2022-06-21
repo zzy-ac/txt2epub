@@ -1,5 +1,8 @@
 # txt2epub
-py、pandoc合力打造的txt转epub自动精排自动删除多余空格空行脚本！
+
+py、pandoc合力打造的txt转格式自动精排脚本！
+
+支持输出格式：epub(通用)、kepub(kobo)、azw3(kindle|安卓端不支持)
 
 # linux设备教程
 
