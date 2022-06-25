@@ -56,7 +56,7 @@ print('书名: '+bookname+'\n'+'作者: '+author_string)
 
 os.system('mv *.txt "%s"' % (txtname))
 
-start = time.perf_counter()
+start01 = time.perf_counter()
 
 
 # 开始图片处理
@@ -209,29 +209,38 @@ new_content = "\n".join(new_content)
 f = open(txtname,'w',encoding="utf=8")
 f.write(new_content)
 f.close
+end01 = time.perf_counter()
+print('初始化用时：%s秒' % (end01 - start01))
 
-
+## 生成epub文件
+start02 = time.perf_counter()
 print("开始生成EPUB文件........")
-os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-chapter-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
-end = time.perf_counter()
-print('Running time: %s Seconds' % (end - start))
-start_1 = time.perf_counter()
+os.system('pandoc "%s" -o "%s" -t epub3 --css=./epub.css --epub-chapter-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
+end02 = time.perf_counter()
+print('epub用时：%s秒' % (end02 - start02))
 
+## 生成azw3格式
+start03 = time.perf_counter()
 os.system('kindlegen -c1 -dont_append_source "%s" -o "%s"> a' % (epubname, azw3name))
 os.system('python ./KindleUnpack/lib/kindleunpack.py -s "%s" "%s"> a' % (azw3name, bookname))
+os.system('rm "%s"' % (azw3name))
+os.system('rm a')
+os.system('mv "%s" ~/Desktop/"%s"' % (bookname+'/mobi8-'+azw3name, azw3name))
+os.system('rm -rf "%s"' % (bookname))
+end03 = time.perf_counter()
+print('azw3用时：%s秒' % (end03 - start03))
 
+## 生成kepub文件
+start04 = time.perf_counter()
 os.system('kepubify -i "%s"' % (epubname))
-end_1 = time.perf_counter()
-#print('Running time: %s Seconds' % (end_1 - start_1))
+end04 = time.perf_counter()
+print('kepub用时： %s秒' % (end04 - start04))
+
+
 print("删除残留文件......")
 os.system('rm "%s"' % (txtname))
 os.system('rm "%s"' % (jpgname))
-os.system('rm "%s"' % (azw3name))
-os.system('rm a')
-#os.system('mv *.kepub.epub "%s"' % (kepubname))
+
 os.system('mv "%s" ~/Desktop' % (epubname))
 os.system('mv "%s" ~/Desktop' % (kepubname))
-os.system('mv "%s" ~/Desktop/"%s"' % (bookname+'/mobi8-'+azw3name, azw3name))
-os.system('rm -rf "%s"' % (bookname))
-#os.system("mv *.mobi /home/zzy/Desktop")
 print("完成，收工，撒花！！🎉🎉")
