@@ -45,7 +45,9 @@ curl https://gh.dmnb.cf/https://github.com/zzy-ac/txt2epub/releases/download/fil
 
 本人没有windows设备，各位自行琢磨，原理跟linux差不多。
 
-自己把pandoc和kepubify的exe版本下载到txt2epub文件夹然后把run.py中相关的路径修改一下应该就好了。
+自己把pandoc和kepubify的exe版本下载到txt2epub文件夹然后把run.py中相关的路径修改一下 ~~应该就好了~~ 好了个屁。
+
+之前看得太疏忽了，这个脚本还用到了一大堆什么cp、mv、cat、wget等等的linux/unix指令，Windows要用还要改不少东西，有感兴趣的可以去改一改，我不用win的就懒得弄了（都用windows了直接easypub不香吗？搁这折腾个屁，这脚本就是因为linux下面没有easypub，calibre又太慢了所以才写的）
 
 
 ### 2022 04.08 更新内容：
