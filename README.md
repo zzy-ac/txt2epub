@@ -12,6 +12,7 @@ git clone https://github.com/zzy-ac/txt2epub.git
 cd txt2epub
 wget https://raw.githubusercontent.com/zzy-ac/txt2epub/termux/requirements.txt
 pip3 install -r requirements.txt
+rm -rf requirements.txt
 #运行
 python3 run.py </path/of/novel>
 ```
