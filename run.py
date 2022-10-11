@@ -32,7 +32,7 @@ azw3name = bookname + '.azw3'
 if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
     
     print('开始下载封面')
-    url = "https://m.qidian.com/search?kw=" + bookname  # 指定目标url, 注意是完整的url, 而[>
+    url = "https://m.qidian.com/soushu/" + bookname + '.html'  # 指定目标url, 注意是完整的url, 而[>
     ob = os.system('wget "%s" -O url.html --show-progress -q' % (url))	# 获取目标url对象
     res = os.popen("cat url.html | grep -e //bookcover.yuewen.com |head -n1|awk -F 'data-src=\"' '{print $2}' | awk -F '\" class=\"book-cover' '{print $1}'")
     res = res.read().strip()
