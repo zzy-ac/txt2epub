@@ -33,15 +33,15 @@ if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
     print('开始下载封面')
     url = "https://m.qidian.com/soushu/" + bookname + '.html'  # 指定目标url, 注意是完整的url, 而[>
     ob = os.system('wget "%s" -O url.html --show-progress -q' % (url))	# 获取目标url对象
-    res = os.popen("cat url.html | grep -e //bookcover.yuewen.com |head -n1|awk -F 'data-src=\"' '{print $2}' | awk -F '\" class=\"book-cover' '{print $1}'")
+    res = os.popen("cat url.html | grep -e //bookcover.yuewen.com |head -n1|awk -F 'data-src=\"' '{print $2}' | awk -F '\" class=\"' '{print $1}' | head -c-4")
     res = res.read().strip()
 #    f = open('url.html','r', encoding="utf-8")
 #    web_demo = f.read()
 #    f.close  # 获取目标url网页源码
 #    lines = web_demo.rsplit("\n") # 将源码分行列入列表
 #    needcode = lines[232] # 提取出图片链接所在的行
-#    res = re.findall(r'(//bookcover.yuewen.com/qdbimg/349573/.*150)',needcode) # 在链接所在>
-    cover_url = 'https:' + res.replace('150','600') #将链接转换为600*800尺寸图片的链接
+#    res = re.findall(r'(//bookcover.yuewen.com/qdbimg/349573/.*150/bookcover.yuewen.com/qdbimg/349573/.*150)',needcode) # 在链接所在>
+    cover_url = 'https:' + res + '600' #将链接转换为600*800尺寸图片的链接
     os.system('wget "%s" -O "%s" --show-progress -q ;rm url.html' % (cover_url,jpgname)) # 调用curl下载图片（别问我为什么不用python下，我菜。
 elif cover_qidian == 'N' or cover_qidian == 'n':
 	jpgfile=input('请输入封面图片路径：').replace("\n","").replace("'","").replace(" ","")
