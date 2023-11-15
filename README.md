@@ -56,6 +56,8 @@ curl https://gh.dmnb.cf/https://github.com/zzy-ac/txt2epub/releases/download/fil
 
 ![https://cdn.dmnb.cf/gh/zzy-ac/My-Selves-Cloud@main/images/2023/6/19/图片_c6ba92cfc5c6e17808aad708dc3163c1.png](https://cdn.dmnb.cf/gh/zzy-ac/My-Selves-Cloud@main/images/2023/6/19/图片_c6ba92cfc5c6e17808aad708dc3163c1.png)
 
+#### windows版本2023 11.15 更新内容:
+解决运行脚本后txtname文件占用无法被删除导致的只能手动删除的bug,现在可以自动删掉了.
 #### windows版本注意事项：千万要看`压缩包里的必读！！不然出错不负责.md`文件
 
 ---
