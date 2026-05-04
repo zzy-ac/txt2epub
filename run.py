@@ -121,7 +121,7 @@ def transimg(path):
         if IsValidImage(img_path):
             try:
                 str = img_path.rsplit(".")
-                if str[-1] == 'jpg' or str[-1] == 'jpeg' or str[-1] == 'JPG' or str[-1] == 'JPEG':
+                if str[-1] == 'jpeg' or str[-1] == 'JPEG':
                     pass
                 else:
                     str = img_path.rsplit(".", 1)
@@ -138,9 +138,10 @@ def transimg(path):
 if __name__ == '__main__':
     path = './'
     transimg(path)
-
+    
 [Image.open(os.path.join(dp, f)).resize((600, 800), Image.Resampling.LANCZOS).save(os.path.join(dp, f), format='JPEG', quality=85) for dp, _, fn in os.walk('.') for f in fn if f.lower().endswith(('.jpeg', '.jpg'))]
 os.system('rename *.jpeg "%s" *.jpeg' % jpgname)
+
 #图片转换结束
 
 print("开始文件转码.......")
@@ -179,7 +180,7 @@ def replace_comma(data):
     """
     Remove the comma,\t from a string
     """ 
-    return re.sub(r"\p{Zs}\p{Zs}+","",data)
+    return re.sub("\p{Zs}\p{Zs}+","",data)
  
 def remove_old(filename_old,filename_new):
     """
