@@ -179,7 +179,7 @@ def replace_comma(data):
     """
     Remove the comma,\t from a string
     """ 
-    return re.sub("\p{Zs}\p{Zs}+","",data)
+    return re.sub(r"\p{Zs}\p{Zs}+","",data)
  
 def remove_old(filename_old,filename_new):
     """
