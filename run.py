@@ -136,8 +136,9 @@ def transimg(path):
 if __name__ == '__main__':
     path = './'
     transimg(path)
-
-os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
+    
+[Image.open(os.path.join(dp, f)).resize((600, 800), Image.Resampling.LANCZOS).save(os.path.join(dp, f), format='JPEG', quality=85) for dp, _, fn in os.walk('.') for f in fn if f.lower().endswith(('.jpeg', '.jpg'))]
+#os.system(r"find ./ -name '*.jpeg' -exec magick -resize 600x800 {} {} \;")
 os.system('rename *.jpeg "%s" *.jpeg' % jpgname)
 #图片转换结束
 
@@ -177,7 +178,7 @@ def replace_comma(data):
     """
     Remove the comma,\t from a string
     """ 
-    return re.sub("\p{Zs}\p{Zs}+","",data)
+    return re.sub(r"\p{Zs}\p{Zs}+","",data)
  
 def remove_old(filename_old,filename_new):
     """
@@ -249,7 +250,7 @@ print('初始化用时：%s秒' % (end01 - start01))
 ## 生成epub文件
 start02 = time.perf_counter()
 print("开始生成EPUB文件........")
-os.system('pandoc "%s" -o "%s" -t epub3 --css=./epub.css --epub-chapter-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
+os.system('pandoc "%s" -o "%s" -t epub3 --css=./epub.css --split-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
 end02 = time.perf_counter()
 print('epub用时：%s秒' % (end02 - start02))
 
