@@ -138,7 +138,6 @@ if __name__ == '__main__':
     transimg(path)
     
 [Image.open(os.path.join(dp, f)).resize((600, 800), Image.Resampling.LANCZOS).save(os.path.join(dp, f), format='JPEG', quality=85) for dp, _, fn in os.walk('.') for f in fn if f.lower().endswith(('.jpeg', '.jpg'))]
-#os.system(r"find ./ -name '*.jpeg' -exec magick -resize 600x800 {} {} \;")
 os.system('rename *.jpeg "%s" *.jpeg' % jpgname)
 #图片转换结束
 
