@@ -34,7 +34,18 @@ if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
 # 下载起点url网页，以便查找封面图片链接
 
     url = 'https://m.qidian.com/soushu/' + bookname + '.html'  # 指定目标url
-    response = requests.get(url, stream=True)
+    
+    # 添加User-Agent和其他常见浏览器头，以模拟浏览器请求，避免WAF拦截
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+    }
+    
+    response = requests.get(url, headers=headers, stream=True) # 在这里传入headers
+    response.raise_for_status() # 检查请求是否成功
 
     with open('url.html', 'wb') as f:
         for chunk in response.iter_content(chunk_size=1024):
@@ -52,7 +63,9 @@ if cover_qidian == 'Y' or cover_qidian == 'y' or cover_qidian == '':
         res = match.group(1)[:-3]
         print("data-src value:", res)
     else:
-        print("No data-src value found")
+        print("No data-src value found. HTML content might be a WAF page or unexpected format.") # 增加提示
+        # 可以选择在这里打印html_content以便调试
+        # print(html_content)
 
 
 # 下载封面图片
@@ -126,7 +139,7 @@ if __name__ == '__main__':
     path = './'
     transimg(path)
 
-os.system("find ./ -name '*.jpeg' -exec convert -resize 600x800 {} {} \;")
+[Image.open(os.path.join(dp, f)).resize((600, 800), Image.Resampling.LANCZOS).save(os.path.join(dp, f), format='JPEG', quality=85) for dp, _, fn in os.walk('.') for f in fn if f.lower().endswith(('.jpeg', '.jpg'))]
 os.system('rename *.jpeg "%s" *.jpeg' % jpgname)
 #图片转换结束
 
@@ -235,7 +248,7 @@ f.close
 
 
 print("开始生成EPUB文件........")
-os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --epub-chapter-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
+os.system('pandoc "%s" -o "%s" -t epub3 --css=epub.css --split-level=2 --epub-cover-image="%s"' % (txtname, epubname, jpgname))
 end = time.perf_counter()
 print('Running time: %s Seconds' % (end - start))
 start_1 = time.perf_counter()
